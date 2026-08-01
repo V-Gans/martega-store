@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Martega Store — Стильні аксесуари</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 0;
+            background-color: #0f0f0f; color: #f0f0f0;
+            scroll-behavior: smooth;
+        }
+        header {
+            background-color: #141414; padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #e50914; position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { font-size: 24px; font-weight: bold; color: #ffffff; }
+        .logo span { color: #e50914; }
+        nav { display: flex; align-items: center; gap: 20px; }
+        nav a {
+            text-decoration: none; color: #b3b3b3; font-size: 14px; transition: color 0.3s;
+        }
+        nav a:hover { color: #e50914; }
+        .user-panel { display: flex; gap: 10px; align-items: center; }
+        .btn-auth {
+            background-color: transparent; border: 1px solid #e50914; color: white;
+            padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 13px; transition: background 0.3s;
+        }
+        .btn-auth:hover { background-color: #e50914; }
+        
+        /* Кнопка кошика в шапці */
+        .cart-icon-btn {
+            background-color: #e50914; color: white; border: none; padding: 8px 15px;
+            border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 5px; transition: background 0.3s;
+        }
+        .cart-icon-btn:hover { background-color: #b20710; }
+
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1200&q=80') center/cover;
+            color: white; text-align: center; padding: 100px 20px; border-bottom: 2px solid #222;
+        }
+        .hero h1 { font-size: 42px; margin-bottom: 15px; }
+        .hero h1 span { color: #e50914; }
+        .hero p { font-size: 18px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; color: #ccc; }
+        .btn-main {
+            background-color: #e50914; color: white; padding: 12px 30px;
+            text-decoration: none; font-weight: bold; border-radius: 4px; display: inline-block; transition: background 0.3s;
+        }
+        .btn-main:hover { background-color: #b20710; }
+
+        .container { max-width: 1100px; margin: 60px auto; padding: 0 20px; }
+        .section-title { text-align: center; font-size: 28px; margin-bottom: 40px; color: #ffffff; }
+        .section-title span { color: #e50914; }
+
+        /* Особистий кабінет */
+        .account-section {
+            background: #141414; border: 1px solid #e50914; padding: 30px; border-radius: 8px; margin-bottom: 50px; display: none;
+        }
+        .account-section h3 { color: #e50914; margin-top: 0; }
+
+        .features {
+            display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;
+            background: #141414; padding: 40px 20px; border-radius: 8px; border: 1px solid #222; margin-bottom: 60px;
+        }
+        .feature-item { text-align: center; flex: 1; min-width: 220px; }
+        .feature-item h3 { font-size: 18px; margin-bottom: 10px; color: #ffffff; }
+        .feature-item p { font-size: 14px; color: #999; }
+
+        .products-grid { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; }
+        .product-card {
+            background: #141414; border: 1px solid #222; border-radius: 8px; width: 320px; overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.3s, border-color 0.3s;
+        }
+        .product-card:hover { transform: translateY(-5px); border-color: #e50914; }
+        .product-card img { width: 100%; height: 220px; object-fit: cover; }
+        .product-info { padding: 20px; text-align: center; }
+        .product-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #ffffff; }
+        .product-price { color: #e50914; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+        .buy-btn {
+            background-color: #e50914; color: white; border: none; padding: 10px 15px;
+            width: 100%; border-radius: 4px; cursor: pointer; font-size: 14px; transition: background 0.3s;
+        }
+        .buy-btn:hover { background-color: #b20710; }
+
+        /* Відгуки */
+        .reviews-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .review-card { background: #141414; border: 1px solid #222; padding: 20px; border-radius: 8px; width: 320px; font-size: 14px; color: #bbb; }
+        .review-card h4 { margin-bottom: 5px; color: #ffffff; }
+        .stars { color: #e50914; margin-bottom: 10px; }
+
+        /* Модальні вікна */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: #141414; border: 1px solid #333; padding: 30px; border-radius: 8px; width: 400px; position: relative; max-height: 80vh; overflow-y: auto;
+        }
+        .close-modal { position: absolute; top: 10px; right: 15px; font-size: 20px; cursor: pointer; color: #aaa; }
+        .close-modal:hover { color: #fff; }
+        .modal-content h3 { color: #fff; margin-top: 0; text-align: center; }
+        
+        .form-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .form-group input { padding: 10px; background: #1f1f1f; border: 1px solid #333; color: #fff; border-radius: 4px; }
+        .form-group button {
+            background-color: #e50914; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer;
+        }
+        .form-group button:hover { background-color: #b20710; }
+
+        /* Стилі для списку в кошику */
+        .cart-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #1f1f1f; padding: 10px 15px; border-radius: 4px; margin-bottom: 10px; font-size: 14px;
+        }
+        .cart-item button {
+            background: transparent; border: none; color: #e50914; cursor: pointer; font-size: 16px;
+        }
+        .cart-total {
+            font-size: 18px; font-weight: bold; text-align: right; margin: 20px 0; color: #fff;
+        }
+
+        .order-section {
+            background: #141414; border: 1px solid #222; padding: 40px; border-radius: 8px; max-width: 600px; margin: 0 auto; text-align: center;
+        }
+        .order-section p { color: #bbb; }
+        .order-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .order-form input { padding: 12px; background: #1f1f1f; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 16px; }
+        .order-form button {
+            background-color: #e50914; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer;
+        }
+        .order-form button:hover { background-color: #b20710; }
+
+        footer { background-color: #0a0a0a; color: #888; text-align: center; padding: 30px; margin-top: 60px; font-size: 14px; border-top: 1px solid #222; }
+
+        @media(max-width: 768px) {
+            header { padding: 15px 20px; flex-direction: column; gap: 15px; }
+            nav { flex-wrap: wrap; justify-content: center; }
+            .hero h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Шапка -->
+    <header>
+        <div class="logo">Martega <span>Store</span></div>
+        <nav>
+            <a href="#catalog">Каталог</a>
+            <a href="#features">Переваги</a>
+            <a href="#reviews">Відгуки</a>
+            <a href="#order">Контакти</a>
+            <button class="cart-icon-btn" onclick="openModal('cartModal')">🛒 Кошик (<span id="cartCount">0</span>)</button>
+        </nav>
+        <div class="user-panel" id="userPanel">
+            <button class="btn-auth" onclick="openModal('registerModal')">Реєстрація</button>
+            <button class="btn-auth" onclick="openModal('loginModal')">Увійти</button>
+        </div>
+    </header>
+
+    <!-- Головний екран -->
+    <section class="hero">
+        <h1>Стильні аксесуари <span>для твого образу</span></h1>
+        <p>Підкресліть свою індивідуальність ексклюзивними деталями та трендовими новинками сезону.</p>
+        <a href="#catalog" class="btn-main">Переглянути каталог</a>
+    </section>
+
+    <!-- Основний контейнер -->
+    <div class="container">
+
+        <!-- Особистий кабінет -->
+        <div class="account-section" id="accountSection">
+            <h3>Особистий кабінет</h3>
+            <p>Вітаємо, <span id="userNameDisplay" style="color: #e50914; font-weight: bold;"></span>!</p>
+            <p>Email: <span id="userEmailDisplay"></span></p>
+            <h4 style="margin-top: 20px; color: #fff;">Історія твоїх замовлень:</h4>
+            <ul id="orderHistoryList" style="color: #bbb; padding-left: 20px;">
+                <li>Замовлень поки немає. Зробіть першу покупку в каталозі нижче!</li>
+            </ul>
+            <button class="btn-auth" onclick="logout()" style="margin-top: 15px; border-color: #555; color: #aaa;">Вийти з акаунта</button>
+        </div>
+
+        <!-- Переваги -->
+        <div class="features" id="features">
+            <div class="feature-item">
+                <h3>💎 Висока якість</h3>
+                <p>Тільки перевірені матеріали та надійна фурнітура.</p>
+            </div>
+            <div class="feature-item">
+                <h3>🚀 Швидка доставка</h3>
+                <p>Відправляємо замовлення протягом 24 годин.</p>
+            </div>
+            <div class="feature-item">
+                <h3>🔄 Зручний обмін</h3>
+                <p>Легке повернення або обмін без зайвих питань.</p>
+            </div>
+        </div>
+
+        <!-- Каталог товарів -->
+        <h2 class="section-title" id="catalog">Популярні <span>товари</span></h2>
+        <div class="products-grid">
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=500&q=80" alt="Ремінь">
+                <div class="product-info">
+                    <div class="product-title">Шкіряний ремінь</div>
+                    <div class="product-price">750 грн</div>
+                    <button class="buy-btn" onclick="addToCart('Шкіряний ремінь', 750)">Додати в кошик</button>
+                </div>
+            </div>
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=500&q=80" alt="Окуляри">
+                <div class="product-info">
+                    <div class="product-title">Сонцезахисні окуляри</div>
+                    <div class="product-price">1200 грн</div>
+                    <button class="buy-btn" onclick="addToCart('Сонцезахисні окуляри', 1200)">Додати в кошик</button>
+                </div>
+            </div>
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=500&q=80" alt="Годинник">
+                <div class="product-info">
+                    <div class="product-title">Мінімалістичний годинник</div>
+                    <div class="product-price">2400 грн</div>
+                    <button class="buy-btn" onclick="addToCart('Мінімалістичний годинник', 2400)">Додати в кошик</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Відгуки -->
+        <h2 class="section-title" id="reviews" style="margin-top: 80px;">Відгуки <span>наших клієнтів</span></h2>
+        <div class="reviews-grid">
+            <div class="review-card">
+                <div class="stars">★★★★★</div>
+                <h4>Олена</h4>
+                <p>«Дуже крутий ремінь! Якість на висоті, швидка доставка. Обов'язково замовлятиму ще.»</p>
+            </div>
+            <div class="review-card">
+                <div class="stars">★★★★★</div>
+                <h4>Максим</h4>
+                <p>«Брав окуляри на літо. Виглядають дорого, упаковані чудово. Дякую за сервіс!»</p>
+            </div>
+        </div>
+
+        <!-- Контакти / Замовлення -->
+        <h2 class="section-title" id="order" style="margin-top: 80px;">Оформити <span>замовлення</span></h2>
+        <div class="order-section">
+            <p>Залиште свої дані, і наш менеджер зв'яжеться з вами протягом 15 хвилин.</p>
+            <form class="order-form" onsubmit="submitForm(event)">
+                <input type="text" id="orderName" placeholder="Ваше ім'я" required>
+                <input type="tel" id="orderPhone" placeholder="Номер телефону" required>
+                <button type="submit">Підтвердити замовлення</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- Модальне вікно Кошика -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('cartModal')">&times;</span>
+            <h3>Ваш кошик</h3>
+            <div id="cartItemsList" style="margin-top: 20px;">
+                <p style="text-align: center; color: #888;">Кошик порожній</p>
+            </div>
+            <div class="cart-total" id="cartTotal">Загалом: 0 грн</div>
+            <button class="buy-btn" onclick="checkoutCart()">Оформити замовлення з кошика</button>
+        </div>
+    </div>
+
+    <!-- Модальне вікно Реєстрації -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('registerModal')">&times;</span>
+            <h3>Реєстрація</h3>
+            <form class="form-group" onsubmit="registerUser(event)">
+                <input type="text" id="regName" placeholder="Ім'я" required>
+                <input type="email" id="regEmail" placeholder="Email" required>
+                <input type="password" id="regPassword" placeholder="Пароль" required>
+                <button type="submit">Зареєструватися</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальне вікно Входу -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+            <h3>Вхід в акаунт</h3>
+            <form class="form-group" onsubmit="loginUser(event)">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Пароль" required>
+                <button type="submit">Увійти</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer>
+        <p>&copy; 2026 Martega Store. Усі права захищені. Створено з любов'ю до деталей.</p>
+    </footer>
+
+    <!-- JavaScript Логіка Кошика та Авторизації -->
+    <script>
+        let cart = [];
+
+        function openModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+        // Додавання товару в кошик
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCartUI();
+            alert('Товар "' + name + '" додано до кошика!');
+        }
+
+        // Видалення товару з кошика
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        // Оновлення вигляду кошика
+        function updateCartUI() {
+            document.getElementById('cartCount').innerText = cart.length;
+            const listContainer = document.getElementById('cartItemsList');
+            let total = 0;
+
+            if (cart.length === 0) {
+                listContainer.innerHTML = '<p style="text-align: center; color: #888;">Кошик порожній</p>';
+                document.getElementById('cartTotal').innerText = 'Загалом: 0 грн';
+                return;
+            }
+
+            listContainer.innerHTML = '';
+            cart.forEach((item, index) => {
+                total += item.price;
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <span>${item.name} — <b>${item.price} грн</b></span>
+                    <button onclick="removeFromCart(${index})">&times;</button>
+                `;
+                listContainer.appendChild(div);
+            });
+
+            document.getElementById('cartTotal').innerText = 'Загалом: ' + total + ' грн';
+        }
+
+        // Оформлення замовлення з кошика
+        function checkoutCart() {
+            if (cart.length === 0) {
+                alert('Кошик порожній!');
+                return;
+            }
+
+            const isLoggedIn = localStorage.getItem('martega_logged_in');
+            if (isLoggedIn === 'true') {
+                let savedUser = JSON.parse(localStorage.getItem('martega_user'));
+                cart.forEach(item => savedUser.orders.push(item.name));
+                localStorage.setItem('martega_user', JSON.stringify(savedUser));
+                updateOrderHistory(savedUser);
+            }
+
+            alert('Замовлення на суму ' + cart.reduce((sum, item) => sum + item.price, 0) + ' грн успішно оформлено! Менеджер зв\'яжеться з вами.');
+            cart = [];
+            updateCartUI();
+            closeModal('cartModal');
+        }
+
+        // Авторизація та акаунт
+        function registerUser(event) {
+            event.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            const user = { name, email, password, orders: [] };
+            localStorage.setItem('martega_user', JSON.stringify(user));
+
+            alert('Реєстрація успішна! Увійдіть у свій акаунт.');
+            closeModal('registerModal');
+            openModal('loginModal');
+        }
+
+        function loginUser(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const savedUser = JSON.parse(localStorage.getItem('martega_user'));
+
+            if (savedUser && savedUser.email === email && savedUser.password === password) {
+                localStorage.setItem('martega_logged_in', 'true');
+                alert('Ласкаво просимо, ' + savedUser.name + '!');
+                closeModal('loginModal');
+                checkAuth();
+            } else {
+                alert('Невірний email або пароль!');
+            }
+        }
+
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('martega_logged_in');
+            const savedUser = JSON.parse(localStorage.getItem('martega_user'));
+            const userPanel = document.getElementById('userPanel');
+            const accountSection = document.getElementById('accountSection');
+
+            if (isLoggedIn === 'true' && savedUser) {
+                userPanel.innerHTML = `<span style="color: #fff; font-size: 14px;">Привіт, ${savedUser.name}</span>`;
+                accountSection.style.display = 'block';
+                document.getElementById('userNameDisplay').innerText = savedUser.name;
+                document.getElementById('userEmailDisplay').innerText = savedUser.email;
+                updateOrderHistory(savedUser);
+            } else {
+                userPanel.innerHTML = `
+                    <button class="btn-auth" onclick="openModal('registerModal')">Реєстрація</button>
+                    <button class="btn-auth" onclick="openModal('loginModal')">Увійти</button>
+                `;
+                accountSection.style.display = 'none';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('martega_logged_in');
+            checkAuth();
+            alert('Ви вийшли з акаунта.');
+        }
+
+        function updateOrderHistory(user) {
+            const list = document.getElementById('orderHistoryList');
+            if (user.orders && user.orders.length > 0) {
+                list.innerHTML = '';
+                user.orders.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerText = item;
+                    list.appendChild(li);
+                });
+            } else {
+                list.innerHTML = '<li>Замовлень поки немає. Зробіть першу покупку!</li>';
+            }
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+            const name = document.getElementById('orderName').value;
+            alert('Дякуємо, ' + name + '! Ваше швидке замовлення прийнято.');
+            event.target.reset();
+        }
+
+        window.onload = checkAuth;
+    </script>
+
+</body>
+</html>
